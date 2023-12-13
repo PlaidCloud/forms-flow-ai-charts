@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Release.Name }}-admin"
+spec:
+  ports:
+  - name: "{{ .Release.Name }}"
+    port: {{ .Values.global.ingress.port }}
+    protocol: TCP
+    targetPort: {{ .Values.global.ingress.port }}
+  selector:
+    app: "{{ .Release.Name }}-admin"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Release.Name }}-analytics
+  name: {{ .Release.Name }}-analytics
+spec:
+  ports:
+  - name: "{{ .Release.Name }}"
+    port: {{ .Values.global.ingress.port }}
+    targetPort: {{ .Values.global.ingress.port }}
+  selector:
+    app: {{ .Release.Name }}-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Release.Name }}-api"
+spec:
+  ports:
+  - name: "{{ .Release.Name }}"
+    port: {{ .Values.global.ingress.port }}
+    protocol: TCP
+    targetPort: {{ .Values.global.ingress.port }}
+  selector:
+    app: "{{ .Release.Name }}-api"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Release.Name }}-bpm
+  name: {{ .Release.Name }}-bpm
+spec:
+  ports:
+  - name: {{ .Release.Name }}
+    port: {{ .Values.global.ingress.port }}
+    targetPort: {{ .Values.global.ingress.port }}
+  selector:
+    app: {{ .Release.Name }}-bpm
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Release.Name }}-data-analysis"
+spec:
+  ports:
+  - name: "{{ .Release.Name }}"
+    port: {{ .Values.global.ingress.port }}
+    protocol: TCP
+    targetPort: {{ .Values.global.ingress.port }}
+  selector:
+    app: "{{ .Release.Name }}-data-analysis"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Release.Name }}-docs"
+spec:
+  ports:
+  - name: "{{ .Release.Name }}"
+    port: {{ .Values.global.ingress.port }}
+    protocol: TCP
+    targetPort: {{ .Values.global.ingress.port }}
+  selector:
+    app: "{{ .Release.Name }}-docs"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Release.Name }}-forms
+  name: {{ .Release.Name }}-forms
+spec:
+  ports:
+  - name: {{ .Release.Name }}
+    port: {{ .Values.global.ingress.port }}
+    targetPort: {{ .Values.global.ingress.port }}
+  selector:
+    app: {{ .Release.Name }}-forms
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Release.Name }}-web
+  name: {{ .Release.Name }}-web
+spec:
+  ports:
+  - name: {{ .Release.Name }}
+    port: {{ .Values.global.ingress.port }}
+    targetPort: {{ .Values.global.ingress.port }}
+  selector:
+    app: {{ .Release.Name }}-web

@@ -1,0 +1,160 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: "{{ .Release.Name }}-admin"
+  name: "{{ .Release.Name }}-admin"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ .Release.Name }}-admin"
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: "{{ .Release.Name }}-admin"
+    spec:
+      containers:
+      - env:
+        - name: DATABASE_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: DATABASE_NAME
+              name: "{{ .Release.Name }}"
+        - name: DATABASE_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: DATABASE_PORT
+              name: "{{ .Release.Name }}"
+        - name: DATABASE_SERVICE_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: DATABASE_SERVICE_NAME
+              name: "{{ .Release.Name }}"
+        - name: DATABASE_URL
+          value: {{ printf "%s/%s" (include "formsflow.postgresUrl" .) "admin" }}
+        - name: JWT_OIDC_ALGORITHMS
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_ALGORITHMS
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_AUDIENCE
+          valueFrom:
+            secretKeyRef:
+              key: ADMIN_WEB_CLIENTID
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_CACHING_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_CACHING_ENABLED
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_ISSUER
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_ISSUER
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_JWKS_CACHE_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_JWKS_CACHE_TIMEOUT
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_JWKS_URI
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_JWKS_URI
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_WELL_KNOWN_CONFIG
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_CONFIG
+              name: "{{ .Release.Name }}"
+        - name: KEYCLOAK_URL
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_URL
+              name: "{{ .Release.Name }}"
+        - name: FORMSFLOW_WEB_URL
+          valueFrom:
+            configMapKeyRef:
+              key: FORMSFLOW_WEB_URL
+              name: "{{ .Release.Name }}"
+        - name: KEYCLOAK_URL_REALM
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_URL_REALM
+              name: "{{ .Release.Name }}"
+        - name: INSIGHT_API_URL
+          valueFrom:
+            configMapKeyRef:
+              key: INSIGHT_API_URL
+              name: "{{ .Release.Name }}"
+        - name: INSIGHT_API_KEY
+          valueFrom:
+            secretKeyRef:
+              key: INSIGHT_API_KEY
+              name: "{{ .Release.Name }}"
+        - name: BPM_API_URL
+          valueFrom:
+            configMapKeyRef:
+              key: BPM_API_URL
+              name: "{{ .Release.Name }}"
+        - name: KEYCLOAK_ADMIN_CLIENT
+          valueFrom:
+            secretKeyRef:
+              key: KEYCLOAK_CLIENTID
+              name: "{{ .Release.Name }}"
+        - name: KEYCLOAK_ADMIN_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: KEYCLOAK_CLIENTSECRET
+              name: "{{ .Release.Name }}"
+        - name: FORMIO_ROOT_EMAIL
+          valueFrom:
+            secretKeyRef:
+              key: FORMIO_ROOT_EMAIL
+              name: "{{ .Release.Name }}"
+        - name: FORMIO_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: FORMIO_ROOT_PASSWORD
+              name: "{{ .Release.Name }}"
+        - name: FORMIO_URL
+          valueFrom:
+            configMapKeyRef:
+              key: FORMIO_URL
+              name: "{{ .Release.Name }}"
+        - name: FORMIO_JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: FORMIO_JWT_SECRET
+              name: "{{ .Release.Name }}"
+        - name: BPM_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: KEYCLOAK_CLIENTSECRET
+              name: "{{ .Release.Name }}"
+        - name: FORMSFLOW_ADMIN_API_CORS_ORIGINS
+          value: '*'
+        image: "{{ .Values.admin.image.registry }}/{{ .Values.admin.image.repository }}:{{ .Values.admin.image.tag }}"
+        name: admin
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.global.ingress.port }}
+        resources:
+          limits:
+            cpu: "{{ .Values.admin.resources.limits.cpu }}"
+            memory: "{{ .Values.admin.resources.limits.memory }}"
+          requests:
+            cpu: "{{ .Values.admin.resources.requests.cpu }}"
+            memory: "{{ .Values.admin.resources.requests.memory }}"
+        stdin: true
+        tty: true
+      restartPolicy: Always
+      imagePullSecrets:
+      - name: "{{ .Values.formsflow.auth }}"

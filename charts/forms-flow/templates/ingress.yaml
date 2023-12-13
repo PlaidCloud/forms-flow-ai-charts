@@ -1,0 +1,99 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app: {{ .Release.Name }}
+  name: {{ .Release.Name }}
+  annotations:
+{{ toYaml .Values.global.ingress.annotations | indent 4 }}
+spec:
+  ingressClassName: {{ .Values.global.ingress.ingressClassName }}
+  {{- if or (and .Values.global.ingress.tls (or ( dict "annotations" .Values.global.ingress.annotations ) .Values.global.ingress.selfSigned .Values.global.ingress.secrets )) .Values.global.ingress.extraTls }}
+  tls:
+    {{- if and .Values.global.ingress.tls (or ( dict "annotations" .Values.global.ingress.annotations ) .Values.global.ingress.secrets .Values.global.ingress.selfSigned) }}
+    - hosts:
+        - {{ (tpl .Values.global.ingress.hostname .) | quote }}
+      secretName: {{ printf "%s-tls" (tpl .Values.global.ingress.hostname .) }}
+    {{- end }}
+  {{- end }}
+  rules:
+    - host: "admin.{{ tpl .Values.global.ingress.hostname .}}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-admin
+                port:
+                  number: {{ .Values.global.ingress.port }}
+    - host: "analytics.{{ tpl .Values.global.ingress.hostname .}}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-analytics
+                port:
+                  number: {{ .Values.global.ingress.port }}
+    - host: "api.{{ tpl .Values.global.ingress.hostname . }}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-api
+                port:
+                  number: {{ .Values.global.ingress.port }}
+    - host: "bpm.{{ tpl .Values.global.ingress.hostname . }}"
+      http:
+        paths:
+          - path: /camunda
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-bpm
+                port:
+                  number: {{ .Values.global.ingress.port }}
+    - host: "data-analysis.{{ tpl .Values.global.ingress.hostname .}}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-data-analysis
+                port:
+                  number: {{ .Values.global.ingress.port }}
+    - host: "docs.{{ tpl .Values.global.ingress.hostname .}} "
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-docs
+                port:
+                  number: {{ .Values.global.ingress.port }}
+    - host: "forms.{{ tpl .Values.global.ingress.hostname . }}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-forms
+                port:
+                  number: {{ .Values.global.ingress.port }}
+    - host: "{{ tpl .Values.global.ingress.hostname . }}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-web
+                port:
+                  number: {{ .Values.global.ingress.port }}

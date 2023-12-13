@@ -1,0 +1,150 @@
+apiVersion: v1
+data:
+  BPM_API_URL: https://bpm.{{ .Values.global.ingress.hostname }}/camunda
+  BPM_APP_SECURITY_ORIGIN: "*"
+  BPM_BASE_URL: https://bpm.{{ .Values.global.ingress.hostname }}
+  BPM_WAIT_FOR: " {{ .Values.bpm.waitFor }}"  
+  CAMUNDA_ANALYTICS_DATABASE_SERVICE_NAME: "{{ .Values.bpm.camunda.analytics.database }}"
+  CAMUNDA_APP_ROOT_LOG_FLAG: "{{ .Values.bpm.camunda.logLevel }}"
+  CAMUNDA_AUTHORIZATION_FLAG: "{{ .Values.bpm.camunda.auth.enabled }}"
+  CAMUNDA_AUTHORIZATION_REVOKE_CHECK_FLAG: "{{ .Values.bpm.camunda.auth.revokeCheck }}"
+  CAMUNDA_DATABASE_NAME: "{{ .Values.bpm.camunda.database.name }}"
+  CAMUNDA_DATABASE_PORT: "{{ .Values.bpm.camunda.database.port }}"
+  CAMUNDA_FORMBUILDER_PIPELINE_USERNAME: "{{ .Values.bpm.camunda.formBuilder.username }}"
+  CAMUNDA_HIKARI_CONN_TIMEOUT: "{{ .Values.bpm.camunda.hikari.timeout.connection }}"
+  CAMUNDA_HIKARI_IDLE_TIMEOUT: "{{ .Values.bpm.camunda.hikari.timeout.idle }}"
+  CAMUNDA_HIKARI_MAX_POOLSIZE: "{{ .Values.bpm.camunda.hikari.poolsize.max }}"
+  CAMUNDA_HIKARI_VALID_TIMEOUT: "{{ .Values.bpm.camunda.hikari.timeout.valid }}"
+  CAMUNDA_JDBC_DRIVER: "{{ .Values.bpm.camunda.jdbc.driver }}"
+  CAMUNDA_JDBC_URL: "{{ tpl .Values.bpm.camunda.jdbc.url .}}"
+  CAMUNDA_JDBC_USER: "{{ .Values.bpm.camunda.jdbc.username}}"
+  CHROME_DRIVER_PATH: "/usr/local/bin/chromedriver"
+  CUSTOM_SUBMISSION_ENABLED: "false"
+  CUSTOM_SUBMISSION_URL: ""
+  DATA_ANALYSIS_DATABASE_SUPPORT: "DISABLED"
+  DATA_ANALYSIS_URL:  https://data-analysis.{{ .Values.global.ingress.hostname }}
+  DATABASE_NAME: {{ .Values.postgresql.enabled | ternary .Values.postgresql.database .Values.global.postgresql.database }}
+  DATABASE_PORT: {{ .Values.postgresql.enabled | ternary .Values.postgresql.port .Values.global.postgresql.port }}
+  DATABASE_SERVICE_NAME: {{ .Values.postgresql.enabled | ternary .Values.postgresql.hostname .Values.global.postgresql.hostname }}
+  DATABASE_URL: {{ include "formsflow.postgresUrl" . }}
+  DRAFT_ENABLED: "{{ .Values.global.features.draft }}"
+  DRAFT_POLLING_RATE: "15000"
+  EXPORT_PDF_ENABLED: "{{ .Values.global.features.exportPDF }}"
+  FORMIO_DEBUG: "formio:*"
+  FORMIO_DOMAIN: https://forms.{{ .Values.global.ingress.hostname }}
+  FORMIO_URL: https://forms.{{ .Values.global.ingress.hostname }}
+  FORMSFLOW_ADMIN_BASE: https://admin.{{ .Values.global.ingress.hostname }}/api
+  FORMSFLOW_ADMIN_URL: https://admin.{{ .Values.global.ingress.hostname }}/api/v1
+  FORMSFLOW_DOC_API_URL: https://docs.{{ .Values.global.ingress.hostname }}
+  FORMSFLOW_WEB_URL: https://web.{{ .Values.global.ingress.hostname }}
+  INSIGHT_API_URL: https://analytics.{{ .Values.global.ingress.hostname }}
+  KEYCLOAK_ENABLE_CLIENT_AUTH: "false"
+  KEYCLOAK_JWT_OIDC_ALGORITHMS: "RS256"
+  KEYCLOAK_JWT_OIDC_CACHING_ENABLED: "True"
+  KEYCLOAK_JWT_OIDC_CONFIG: https://{{ .Values.keycloak.enabled | ternary .Values.keycloak.url .Values.global.keycloak.baseUrl }}/auth/realms/{{ .Values.keycloak.realm }}/.well-known/openid-configuration
+  KEYCLOAK_JWT_OIDC_ISSUER: https://{{ .Values.keycloak.enabled | ternary .Values.keycloak.url .Values.global.keycloak.baseUrl }}/auth/realms/{{ .Values.keycloak.realm }}
+  KEYCLOAK_JWT_OIDC_JWKS_CACHE_TIMEOUT: "300"
+  KEYCLOAK_JWT_OIDC_JWKS_URI: https://{{ .Values.keycloak.enabled | ternary .Values.keycloak.url .Values.global.keycloak.baseUrl }}/auth/realms/{{ .Values.keycloak.realm }}/protocol/openid-connect/certs
+  KEYCLOAK_TOKEN_URL: https://{{ .Values.keycloak.enabled | ternary .Values.keycloak.url .Values.global.keycloak.baseUrl }}/auth/realms/{{ .Values.keycloak.realm }}/protocol/openid-connect/token
+  KEYCLOAK_URL_REALM: {{ .Values.keycloak.enabled | ternary .Values.keycloak.realm .Values.global.keycloak.realm }}
+  KEYCLOAK_URL: https://{{ .Values.keycloak.enabled | ternary .Values.keycloak.url .Values.global.keycloak.baseUrl }}
+  MODEL_ID: "Seethal/sentiment_analysis_generic_dataset"
+  MONGODB_URI:  {{ .Values.mongodb.enabled | ternary (tpl "mongodb://{{ .Values.mongodb.auth.usernames | first }}:{{ .Values.mongodb.auth.passwords | first }}@{{ .Values.mongodb.service.nameOverride }}:{{ .Values.mongodb.service.ports.mongodb }}/{{ .Values.mongodb.auth.databases | first }}" .) "<DEFINE_ME>" | quote }} 
+  MULTI_TENANCY_ENABLED: "false"
+  NODE_CONFIG: '{ "mongodb": "{{ include "formsflow.mongodbUrl" . }}"}'
+  NODE_ENV: "production"
+  REDIS_ENABLED: "false"
+  REDIS_HOST: "{{ .Values.redis.enabled | ternary .Values.redis.host .Values.global.redis.host }}"
+  REDIS_PORT: "{{ .Values.redis.enabled | ternary .Values.redis.port .Values.global.redis.port }}"
+  WEB_API_URL: https://api.{{ .Values.global.ingress.hostname }}
+  WEB_APPLICATION_NAME: "{{ tpl .Values.webname . }}"
+  WEB_CUSTOM_THEME_URL: "{{ tpl .Values.web.custom_theme_url . }}"
+  WEB_ENABLE_APPLICATIONS_MODULE: "true"
+  WEB_ENABLE_DASHBOARDS_MODULE: "true"
+  WEB_ENABLE_FORMS_MODULE: "true"
+  WEB_ENABLE_PROCESSES_MODULE: "true"
+  WEB_ENABLE_TASKS_MODULE: "true"
+  WEB_KEYCLOAK_CLIENT: "{{ tpl .Values.webclient . }}"
+  WEB_OPENTELEMETRY_SERVICE: "false"
+  WEB_PUBLIC_WORKFLOW_ENABLED: "false"
+  WEB_USER_ACCESS_PERMISSIONS: ''
+  WEB_WEB_BASE_CUSTOM_URL: "{{ tpl .Values.web.base_custom_url . }}"
+  WEBSOCKET_MESSAGE_TYPE: "{{ .Values.bpm.camunda.websocket.messageType }}"
+  WEBSOCKET_SECURITY_ORIGIN: {{ ternary  (.Values.bpm.camunda.websocket.securityOrigin | quote) (randAlphaNum 6 | quote) (kindIs "string" .Values.bpm.camunda.websocket.securityOrigin) }}
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}
+---
+apiVersion: v1
+data:
+  mail-config.properties: |
+    # send mails via SMTP
+    mail.transport.protocol=smtp
+    mail.smtp.auth=true
+    mail.smtp.host={{.Values.mail.smtp.server}}
+    mail.smtp.port={{.Values.mail.smtp.port}}
+    mail.smtp.ssl.enable={{.Values.mail.smtp.ssl.enable}}
+    mail.smtp.socketFactory.port=465
+    mail.smtp.socketFactory.class=javax.net.ssl.SSLSocketFactory
+    # poll mails via IMAPS
+    #mail.store.protocol=imaps
+    # mail.imaps.host=imap.gmail.com
+    mail.imaps.port=993
+    mail.imaps.timeout=1000
+    # additional config
+    #mail.poll.folder=INBOX
+    mail.sender={{.Values.mail.from}}
+    mail.sender.alias=DoNotReply
+    mail.attachment.download=true
+    mail.attachment.path=attachments
+    # credentials
+    mail.user={{.Values.mail.user}}
+    mail.password={{.Values.mail.password}}
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ .Release.Name }}-bpm-mail-config
+  name: {{ .Release.Name }}-bpm-mail-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ .Release.Name }}-web-config.template
+  name: {{ .Release.Name }}-web-config.template
+data:
+  config.js: |-
+    // runtime-config.js vars
+      window["_env_"] =  {
+        "NODE_ENV": "${NODE_ENV}",
+        "REACT_APP_API_SERVER_URL": "${REACT_APP_API_SERVER_URL}",
+        "REACT_APP_API_PROJECT_URL": "${REACT_APP_API_PROJECT_URL}", 
+        "REACT_APP_BPM_URL": "${REACT_APP_BPM_URL}", 
+        "REACT_APP_KEYCLOAK_CLIENT": "${REACT_APP_KEYCLOAK_CLIENT}", 
+        "REACT_APP_WEB_BASE_URL": "${REACT_APP_WEB_BASE_URL}", 
+        "REACT_APP_WEBSOCKET_ENCRYPT_KEY": "${REACT_APP_WEBSOCKET_ENCRYPT_KEY}", 
+        "REACT_APP_KEYCLOAK_URL_REALM": "${REACT_APP_KEYCLOAK_URL_REALM}", 
+        "REACT_APP_KEYCLOAK_URL": "${REACT_APP_KEYCLOAK_URL}",
+        "REACT_APP_APPLICATION_NAME": "${REACT_APP_APPLICATION_NAME}",
+        "REACT_APP_USER_ACCESS_PERMISSIONS": "${REACT_APP_USER_ACCESS_PERMISSIONS}",
+        "REACT_APP_MT_ADMIN_BASE_URL": "${REACT_APP_MT_ADMIN_BASE_URL}",
+        "REACT_APP_MT_ADMIN_BASE_URL_VERSION": "v1",
+        "REACT_APP_MULTI_TENANCY_ENABLED": "${REACT_APP_MULTI_TENANCY_ENABLED}",
+        "REACT_APP_KEYCLOAK_ENABLE_CLIENT_AUTH": "${REACT_APP_KEYCLOAK_ENABLE_CLIENT_AUTH}",
+        "REACT_APP_CUSTOM_SUBMISSION_URL": "${REACT_APP_CUSTOM_SUBMISSION_URL}",
+        "REACT_APP_CUSTOM_SUBMISSION_ENABLED": "${REACT_APP_CUSTOM_SUBMISSION_ENABLED}",
+        "REACT_APP_DOCUMENT_SERVICE_URL": "${REACT_APP_DOCUMENT_SERVICE_URL}",
+        "REACT_APP_DRAFT_ENABLED": "${REACT_APP_DRAFT_ENABLED}",
+        "REACT_APP_DRAFT_POLLING_RATE": "${REACT_APP_DRAFT_POLLING_RATE}",
+        "REACT_APP_EXPORT_PDF_ENABLED": "${REACT_APP_EXPORT_PDF_ENABLED}",
+
+        "REACT_APP_OPENTELEMETRY_SERVICE": "${OPENTELEMETRY_SERVICE}",
+        "REACT_APP_PUBLIC_WORKFLOW_ENABLED": "${PUBLIC_WORKFLOW_ENABLED}",
+        "REACT_APP_WEB_BASE_CUSTOM_URL": "${WEB_BASE_CUSTOM_URL}",
+        "CUSTOM_THEME_URL": "${CUSTOM_THEME_URL}",
+        "ENABLE_FORMS_MODULE": "${ENABLE_FORMS_MODULE}",
+        "ENABLE_TASKS_MODULE": "${ENABLE_TASKS_MODULE}",
+        "ENABLE_DASHBOARDS_MODULE": "${ENABLE_DASHBOARDS_MODULE}",
+        "ENABLE_PROCESSES_MODULE": "${ENABLE_PROCESSES_MODULE}",
+        "ENABLE_APPLICATIONS_MODULE": "${ENABLE_APPLICATIONS_MODULE}"
+      }
