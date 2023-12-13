@@ -1,4 +1,5 @@
 *.tgz
 *.lock
 *.swp
-
+.vscode
+charts/forms-flow/charts
