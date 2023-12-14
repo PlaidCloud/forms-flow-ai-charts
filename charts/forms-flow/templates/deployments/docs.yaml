@@ -113,6 +113,5 @@ spec:
         stdin: true
         tty: true
       restartPolicy: Always
-      imagePullSecrets:
-      - name: "{{ .Values.formsflow.auth }}"
+      {{- include "formsflow.imagePullSecrets" . | nindent 6 }}
 

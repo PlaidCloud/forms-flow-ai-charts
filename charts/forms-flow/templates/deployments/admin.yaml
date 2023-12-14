@@ -23,10 +23,7 @@ spec:
       containers:
       - env:
         - name: DATABASE_NAME
-          valueFrom:
-            configMapKeyRef:
-              key: DATABASE_NAME
-              name: "{{ .Release.Name }}"
+          value: "forms-flow-admin"
         - name: DATABASE_PORT
           valueFrom:
             configMapKeyRef:
@@ -156,5 +153,4 @@ spec:
         stdin: true
         tty: true
       restartPolicy: Always
-      imagePullSecrets:
-      - name: "{{ .Values.formsflow.auth }}"
+      {{- include "formsflow.imagePullSecrets" . | nindent 6 }}

@@ -48,10 +48,7 @@ spec:
               key: KEYCLOAK_TOKEN_URL
               name: "{{ .Release.Name }}"
         - name: DATABASE_NAME
-          valueFrom:
-            configMapKeyRef:
-              key: DATABASE_NAME
-              name: "{{ .Release.Name }}"
+          value: "forms-flow-api"
         - name: DATABASE_PORT
           valueFrom:
             configMapKeyRef:
@@ -166,10 +163,9 @@ spec:
             cpu: "{{ .Values.api.resources.limits.cpu }}"
             memory: "{{ .Values.api.resources.limits.memory }}"
           requests:
-            cpu: "{{ .Values.api.resources.api.requests.cpu }}"
-            memory: "{{ .Values.api.resources.api.requests.memory }}"
+            cpu: "{{ .Values.api.resources.requests.cpu }}"
+            memory: "{{ .Values.api.resources.requests.memory }}"
         stdin: true
         tty: true
       restartPolicy: Always
-      imagePullSecrets:
-      - name: "{{ .Values.formsflow.auth }}"
+      {{- include "formsflow.imagePullSecrets" . | nindent 6 }}

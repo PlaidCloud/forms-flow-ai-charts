@@ -88,3 +88,4 @@ spec:
         stdin: true
         tty: true
       restartPolicy: Always
+      {{- include "formsflow.imagePullSecrets" . | nindent 6 }}

@@ -2,6 +2,7 @@ global:
   features:
     draft: false
     exportPDF: false
+  imagePullSecrets: []
   ingress:
     ingressClassName: ""
     annotations: {}
@@ -20,15 +21,14 @@ global:
     hostname: ""
     port: ""
   postgresql:
-    username: ""
-    password: ""
-    database: ""
-    hostname: ""
-    port: ""
+    username: "abcd"
+    password: "efgh"
+    database: "ijkl"
+    hostname: "mnop"
+    port: "1234"
   redis:
     host: ""
     port: ""
-
 
 admin:
   image:
@@ -120,20 +120,17 @@ bpm:
     auth:
       enabled: true
       revokeCheck: auto
-    database:
-      name: forms-flow-bpm
-      port: 5432
     logLevel: INFO
     formBuilder:
-      password: demo # CAMUNDA_FORMBUILDER_PIPELINE_PASSWORD
-      username: demo # CAMUNDA_FORMBUILDER_PIPELINE_USERNAME
+      password: demo
+      username: demo
     hikari:
       timeout:
-        connection: 30000 #CAMUNDA_HIKARI_CONNECTION_TIMEOUT
-        idle: 600000 #CAMUNDA_HIKARI_IDLE_TIMEOUT
-        valid: 5000 #CAMUNDA_HIKARI_VALID_TIMEOUT
+        connection: 30000
+        idle: 600000
+        valid: 5000
       poolsize:
-        max: 10 #CAMUNDA_HIKARI_MAX_POOLSIZE
+        max: 10
     jdbc:
       driver: org.postgresql.Driver
       username: postgres
@@ -402,27 +399,29 @@ mongodb:
 postgresql-ha:
   enabled: false
   postgresql:
-    enabled: true
     image:
       registry: docker.io
       repository: bitnami/postgresql-repmgr
       tag: 15.1.0-debian-11-r0
-    fullnameOverride: "forms-flow-idm-postgresql"
     replicaCount: 3
     containerPorts:
       postgresql: 5432
     podSecurityContext:
       enabled: false
+      fsGroup: 1001
     containerSecurityContext:
       enabled: false
+      runAsUser: 1001
       runAsNonRoot: true
+      readOnlyRootFilesystem: false
+
     livenessProbe:
       enabled: false
     readinessProbe:
       enabled: false
     username: postgres
     password: "postgres"
-    database: "forms-flow-idm"
+    database: "forms-flow-ai"
     postgresPassword: "changeme"
 
     repmgrUsername: repmgr
@@ -438,21 +437,19 @@ postgresql-ha:
     repmgrChildNodesDisconnectTimeout: 30
     initdbScripts:
       init_script.sql: |
-         GRANT pg_read_all_data TO postgres;
-         GRANT pg_write_all_data TO postgres;
-         GRANT USAGE ON SCHEMA public TO postgres;
-         GRANT CONNECT ON DATABASE "forms-flow-idm" to postgres;
-         GRANT ALL PRIVILEGES ON DATABASE "forms-flow-idm" to postgres;
-         GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO postgres;   
-
-         GRANT pg_read_all_data TO repmgr;
-         GRANT pg_write_all_data TO repmgr;
-         GRANT USAGE ON SCHEMA public TO repmgr;
-         GRANT CONNECT ON DATABASE "forms-flow-idm" to repmgr;
-         GRANT ALL PRIVILEGES ON DATABASE "forms-flow-idm" to repmgr;
-         GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO repmgr;
-
-         alter database "forms-flow-idm" set default_transaction_read_only = off;
+            CREATE DATABASE "forms-flow-admin";
+            CREATE DATABASE "forms-flow-analytics";
+            CREATE DATABASE "forms-flow-api";
+            CREATE DATABASE "forms-flow-bpm";
+            GRANT ALL PRIVILEGES ON DATABASE "forms-flow-admin" to postgres;
+            GRANT ALL PRIVILEGES ON DATABASE "forms-flow-analytics" to postgres;
+            GRANT ALL PRIVILEGES ON DATABASE "forms-flow-api" to postgres;
+            GRANT ALL PRIVILEGES ON DATABASE "forms-flow-bpm" to postgres;
+            set transaction read write;
+            alter database "forms-flow-bpm" set default_transaction_read_only = off;
+            alter database "forms-flow-api" set default_transaction_read_only = off;
+            alter database "forms-flow-analytics" set default_transaction_read_only = off;
+            alter database "forms-flow-admin" set default_transaction_read_only = off;
   pgpool:
     image:
       registry: docker.io

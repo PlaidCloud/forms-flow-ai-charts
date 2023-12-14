@@ -197,8 +197,7 @@ spec:
         - mountPath: /tmp/forms-flow-web-config.template
           name: web-config
           readOnly: true
-      imagePullSecrets:
-      - name: "{{ .Values.formsflow.auth }}"
+      {{- include "formsflow.imagePullSecrets" . | nindent 6 }}
       restartPolicy: Always
       volumes:
       - configMap:

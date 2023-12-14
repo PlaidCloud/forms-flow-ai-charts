@@ -52,13 +52,13 @@ imagePullSecrets:
 {{- end -}}
 {{- end -}}
 
-
 {{- define "formsflow.postgresUrl" -}}
-{{- if .Values.postgresql.enabled -}}
+{{- if index .Values "postgresql-ha.enabled" -}}
 {{/* Use postgres info provided by subchart deployment */}}
 {{- else -}}
 {{- with .Values.global.postgresql -}}
-{{ printf "postgresql://%s:%s@%s:%s" .Values.global.postgresql.username .Values.global.postgresql.password .Values.global.postgresql.hostname .Values.global.postgresql.port }}
+{{ printf "postgresql://%s:%s@%s:%s" .username .password .hostname .port }}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -67,6 +67,7 @@ imagePullSecrets:
 {{/* Use mongodb info provided by subchart deployment */}}
 {{- else -}}
 {{- with .Values.global.mongodb -}}
-{{ printf "mongodb://%s:%s@%s:%s/%s" .Values.global.mongodb.username .Values.global.mongodb.password .Values.global.mongodb.hostname .Values.global.mongodb.port .Values.global.mongodb.database }}
+{{ printf "mongodb://%s:%s@%s:%s/%s" .username .password .hostname .port .database }}
+{{- end -}}
 {{- end -}}
 {{- end -}}

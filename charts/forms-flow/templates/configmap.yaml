@@ -8,8 +8,6 @@ data:
   CAMUNDA_APP_ROOT_LOG_FLAG: "{{ .Values.bpm.camunda.logLevel }}"
   CAMUNDA_AUTHORIZATION_FLAG: "{{ .Values.bpm.camunda.auth.enabled }}"
   CAMUNDA_AUTHORIZATION_REVOKE_CHECK_FLAG: "{{ .Values.bpm.camunda.auth.revokeCheck }}"
-  CAMUNDA_DATABASE_NAME: "{{ .Values.bpm.camunda.database.name }}"
-  CAMUNDA_DATABASE_PORT: "{{ .Values.bpm.camunda.database.port }}"
   CAMUNDA_FORMBUILDER_PIPELINE_USERNAME: "{{ .Values.bpm.camunda.formBuilder.username }}"
   CAMUNDA_HIKARI_CONN_TIMEOUT: "{{ .Values.bpm.camunda.hikari.timeout.connection }}"
   CAMUNDA_HIKARI_IDLE_TIMEOUT: "{{ .Values.bpm.camunda.hikari.timeout.idle }}"
@@ -23,9 +21,8 @@ data:
   CUSTOM_SUBMISSION_URL: ""
   DATA_ANALYSIS_DATABASE_SUPPORT: "DISABLED"
   DATA_ANALYSIS_URL:  https://data-analysis.{{ .Values.global.ingress.hostname }}
-  DATABASE_NAME: {{ .Values.postgresql.enabled | ternary .Values.postgresql.database .Values.global.postgresql.database }}
-  DATABASE_PORT: {{ .Values.postgresql.enabled | ternary .Values.postgresql.port .Values.global.postgresql.port }}
-  DATABASE_SERVICE_NAME: {{ .Values.postgresql.enabled | ternary .Values.postgresql.hostname .Values.global.postgresql.hostname }}
+  DATABASE_PORT: {{ (index .Values "postgresql-ha" "enabled") | ternary (index .Values "postgresql-ha" "postgresql" "containerPorts" "postgresql") .Values.global.postgresql.port  }}
+  DATABASE_SERVICE_NAME: {{ index .Values "postgresql-ha" "enabled" | ternary (printf "%s-postgresql-ha-pgpool" .Release.Name) .Values.global.postgresql.hostname }}
   DATABASE_URL: {{ include "formsflow.postgresUrl" . }}
   DRAFT_POLLING_RATE: "15000"
   FEATURE_DRAFT_ENABLED: "{{ .Values.global.features.draft }}"
@@ -57,8 +54,8 @@ data:
   REDIS_HOST: "{{ .Values.redis.enabled | ternary .Values.redis.host .Values.global.redis.host }}"
   REDIS_PORT: "{{ .Values.redis.enabled | ternary .Values.redis.port .Values.global.redis.port }}"
   WEB_API_URL: https://api.{{ .Values.global.ingress.hostname }}
-  WEB_APPLICATION_NAME: "{{ tpl .Values.web.name . }}"
-  WEB_CUSTOM_THEME_URL: "{{ tpl .Values.web.custom_theme_url . }}"
+  WEB_APPLICATION_NAME: "{{ tpl .Values.web.config.name . }}"
+  WEB_CUSTOM_THEME_URL: "{{ tpl .Values.web.config.custom_theme_url . }}"
   WEB_ENABLE_APPLICATIONS_MODULE: "true"
   WEB_ENABLE_DASHBOARDS_MODULE: "true"
   WEB_ENABLE_FORMS_MODULE: "true"
@@ -67,7 +64,7 @@ data:
   WEB_OPENTELEMETRY_SERVICE: "false"
   WEB_PUBLIC_WORKFLOW_ENABLED: "false"
   WEB_USER_ACCESS_PERMISSIONS: ''
-  WEB_WEB_BASE_CUSTOM_URL: "{{ tpl .Values.web.base_custom_url . }}"
+  WEB_WEB_BASE_CUSTOM_URL: "{{ tpl .Values.web.config.base_custom_url . }}"
   WEBSOCKET_MESSAGE_TYPE: "{{ .Values.bpm.camunda.websocket.messageType }}"
   WEBSOCKET_SECURITY_ORIGIN: {{ kindIs "string" .Values.bpm.camunda.websocket.securityOrigin | ternary  (.Values.bpm.camunda.websocket.securityOrigin | quote) (randAlphaNum 6 | quote) }}
 kind: ConfigMap
@@ -80,9 +77,9 @@ data:
     # send mails via SMTP
     mail.transport.protocol=smtp
     mail.smtp.auth=true
-    mail.smtp.host={{ .Values.mail.smtp.server }}
-    mail.smtp.port={{ .Values.mail.smtp.port }}
-    mail.smtp.ssl.enable={{ .Values.mail.smtp.ssl.enable }}
+    mail.smtp.host={{ .Values.bpm.mail.smtp.server }}
+    mail.smtp.port={{ .Values.bpm.mail.smtp.port }}
+    mail.smtp.ssl.enable={{ .Values.bpm.mail.smtp.ssl.enable }}
     mail.smtp.socketFactory.port=465
     mail.smtp.socketFactory.class=javax.net.ssl.SSLSocketFactory
     # poll mails via IMAPS
@@ -92,13 +89,13 @@ data:
     mail.imaps.timeout=1000
     # additional config
     #mail.poll.folder=INBOX
-    mail.sender={{ .Values.mail.from }}
+    mail.sender={{ .Values.bpm.mail.from }}
     mail.sender.alias=DoNotReply
     mail.attachment.download=true
     mail.attachment.path=attachments
     # credentials
-    mail.user={{ .Values.mail.user }}
-    mail.password={{ .Values.mail.password }}
+    mail.user={{ .Values.bpm.mail.user }}
+    mail.password={{ .Values.bpm.mail.password }}
 kind: ConfigMap
 metadata:
   labels:

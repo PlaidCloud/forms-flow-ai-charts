@@ -67,14 +67,11 @@ spec:
               key: CAMUNDA_AUTHORIZATION_REVOKE_CHECK_FLAG
               name: "{{ .Release.Name }}"
         - name: CAMUNDA_DATABASE_NAME
-          valueFrom:
-            configMapKeyRef:
-              key: CAMUNDA_DATABASE_NAME
-              name: "{{ .Release.Name }}"
+          value: "forms-flow-bpm"
         - name: CAMUNDA_DATABASE_PORT
           valueFrom:
             configMapKeyRef:
-              key: CAMUNDA_DATABASE_PORT
+              key: DATABASE_PORT
               name: "{{ .Release.Name }}"
         - name: CAMUNDA_DATABASE_SERVICE_NAME
           valueFrom:
@@ -300,16 +297,15 @@ spec:
             cpu: "{{ .Values.bpm.resources.limits.cpu }}"
             memory: "{{ .Values.bpm.resources.limits.memory }}"
           requests:
-            cpu: "{{ .Values.bpm.resources.bpm.requests.cpu }}"
-            memory: "{{ .Values.bpm.resources.bpm.requests.memory }}"
+            cpu: "{{ .Values.bpm.resources.requests.cpu }}"
+            memory: "{{ .Values.bpm.resources.requests.memory }}"
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
         - mountPath: /app/mail-config.properties
           name: camunda-mail-config
           subPath: mail-config.properties
-      imagePullSecrets:
-      - name: "{{ .Values.formsflow.auth }}"
+      {{- include "formsflow.imagePullSecrets" . | nindent 6 }}
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
