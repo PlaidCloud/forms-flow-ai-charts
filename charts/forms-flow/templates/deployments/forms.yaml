@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Release.Name }}-forms
+  name: {{ .Release.Name }}-forms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-forms
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-forms
+    spec:
+      containers:
+      - env:
+        - name: NODE_CONFIG
+          valueFrom:
+            configMapKeyRef:
+              key: NODE_CONFIG
+              name: "{{ .Release.Name }}"
+        - name: ROOT_EMAIL
+          valueFrom:
+            secretKeyRef:
+              key: FORMIO_ROOT_EMAIL
+              name: "{{ .Release.Name }}"
+        - name: ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: FORMIO_ROOT_PASSWORD
+              name: "{{ .Release.Name }}"
+        - name: FORMIO_JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: FORMIO_JWT_SECRET
+              name: "{{ .Release.Name }}"
+        # - name: FORMIO_DEBUG
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       key: FORMIO_DEBUG
+        #       name: "{{ .Release.Name }}"
+        - name: FORMIO_DOMAIN
+          valueFrom:
+            configMapKeyRef:
+              key: FORMIO_DOMAIN
+              name: "{{ .Release.Name }}"
+        - name: MULTI_TENANCY_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: MULTI_TENANCY_ENABLED
+              name: "{{ .Release.Name }}"
+        image: "{{ .Values.forms.image.registry }}/{{ .Values.forms.image.repository }}:{{ .Values.forms.image.tag }}"
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 10
+          initialDelaySeconds: 120
+          periodSeconds: 60
+          successThreshold: 1
+          tcpSocket:
+            port: 3001
+          timeoutSeconds: 1
+        name: forms
+        ports:
+        - containerPort: {{ int .Values.global.ingress.port }}
+        readinessProbe:
+          failureThreshold: 10
+          initialDelaySeconds: 120
+          periodSeconds: 60
+          successThreshold: 1
+          tcpSocket:
+            port: 3001
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: "{{ .Values.forms.resources.limits.cpu }}"
+            memory: "{{ .Values.forms.resources.limits.memory }}"
+          requests:
+            cpu: "{{ .Values.forms.resources.requests.cpu }}"
+            memory: "{{ .Values.forms.resources.requests.memory }}"
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+      {{- include "formsflow.imagePullSecrets" . | nindent 6 }}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

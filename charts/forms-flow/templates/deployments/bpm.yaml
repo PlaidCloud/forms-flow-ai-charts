@@ -1,0 +1,321 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: "{{ .Release.Name }}-bpm"
+  name: "{{ .Release.Name }}-bpm"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ .Release.Name }}-bpm"
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: "{{ .Release.Name }}-bpm"
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: name
+                operator: In
+                values:
+                - "{{ .Release.Name }}-bpm"
+            topologyKey: kubernetes.io/hostname
+      containers:
+        env:
+        - name: ADMIN_WEB_CLIENTID
+          valueFrom:
+            secretKeyRef:
+              key: WEB_CLIENTID
+              name: "{{ .Release.Name }}"
+        - name: APP_SECURITY_ORIGIN
+          valueFrom:
+            configMapKeyRef:
+              key: BPM_APP_SECURITY_ORIGIN
+              name: "{{ .Release.Name }}"
+        - name: BPM_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              key: BPM_BASE_URL
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_ANALYTICS_DATABASE_SERVICE_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: CAMUNDA_ANALYTICS_DATABASE_SERVICE_NAME
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_APP_ROOT_LOG_FLAG
+          valueFrom:
+            configMapKeyRef:
+              key: CAMUNDA_APP_ROOT_LOG_FLAG
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_AUTHORIZATION_FLAG
+          valueFrom:
+            configMapKeyRef:
+              key: CAMUNDA_AUTHORIZATION_FLAG
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_AUTHORIZATION_REVOKE_CHECK_FLAG
+          valueFrom:
+            configMapKeyRef:
+              key: CAMUNDA_AUTHORIZATION_REVOKE_CHECK_FLAG
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_DATABASE_NAME
+          value: "forms-flow-bpm"
+        - name: CAMUNDA_DATABASE_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: DATABASE_PORT
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_DATABASE_SERVICE_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: DATABASE_SERVICE_NAME
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_FORMBUILDER_PIPELINE_BPM_URL
+          valueFrom:
+            configMapKeyRef:
+              key: BPM_API_URL
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_FORMBUILDER_PIPELINE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: CAMUNDA_FORMBUILDER_PIPELINE_PASSWORD
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_FORMBUILDER_PIPELINE_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              key: CAMUNDA_FORMBUILDER_PIPELINE_USERNAME
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_HIKARI_CONN_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              key: CAMUNDA_HIKARI_CONN_TIMEOUT
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_HIKARI_IDLE_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              key: CAMUNDA_HIKARI_IDLE_TIMEOUT
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_HIKARI_VALID_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              key: CAMUNDA_HIKARI_VALID_TIMEOUT
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_HIKARI_MAX_POOLSIZE
+          valueFrom:
+            configMapKeyRef:
+              key: CAMUNDA_HIKARI_MAX_POOLSIZE
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_JDBC_DRIVER
+          valueFrom:
+            configMapKeyRef:
+              key: CAMUNDA_JDBC_DRIVER
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_JDBC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: CAMUNDA_JDBC_PASSWORD
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_JDBC_URL
+          valueFrom:
+            configMapKeyRef:
+              key: CAMUNDA_JDBC_URL
+              name: "{{ .Release.Name }}"
+        - name: CAMUNDA_JDBC_USER
+          valueFrom:
+            configMapKeyRef:
+              key: CAMUNDA_JDBC_USER
+              name: "{{ .Release.Name }}"
+        - name: CUSTOM_SUBMISSION_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: CUSTOM_SUBMISSION_ENABLED
+              name: "{{ .Release.Name }}"
+        - name: CUSTOM_SUBMISSION_URL
+          valueFrom:
+            configMapKeyRef:
+              key: CUSTOM_SUBMISSION_URL
+              name: "{{ .Release.Name }}"
+        - name: DATA_ANALYSIS_URL
+          valueFrom:
+            configMapKeyRef:
+              key: DATA_ANALYSIS_URL
+              name: "{{ .Release.Name }}"
+        - name: FORMIO_JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: FORMIO_JWT_SECRET
+              name: "{{ .Release.Name }}"
+        - name: FORMIO_ROOT_EMAIL
+          valueFrom:
+            secretKeyRef:
+              key: FORMIO_ROOT_EMAIL
+              name: "{{ .Release.Name }}"
+        - name: FORMIO_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: FORMIO_ROOT_PASSWORD
+              name: "{{ .Release.Name }}"
+        - name: FORMIO_URL
+          valueFrom:
+            configMapKeyRef:
+              key: FORMIO_URL
+              name: "{{ .Release.Name }}"
+        - name: FORMSFLOW_ADMIN_URL
+          valueFrom:
+            configMapKeyRef:
+              key: FORMSFLOW_ADMIN_URL
+              name: "{{ .Release.Name }}"
+        - name: FORMSFLOW_API_URL
+          valueFrom:
+            configMapKeyRef:
+              key: WEB_API_URL
+              name: "{{ .Release.Name }}"
+        - name: INSIGHT_API_KEY
+          valueFrom:
+            secretKeyRef:
+              key: INSIGHT_API_KEY
+              name: "{{ .Release.Name }}"
+        - name: KEYCLOAK_CLIENTID
+          valueFrom:
+            secretKeyRef:
+              key: BPM_KEYCLOAK_CLIENTID
+              name: "{{ .Release.Name }}"
+        - name: KEYCLOAK_CLIENTSECRET
+          valueFrom:
+            secretKeyRef:
+              key: BPM_KEYCLOAK_CLIENTSECRET
+              name: "{{ .Release.Name }}"
+        - name: KEYCLOAK_ENABLE_CLIENT_AUTH
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_ENABLE_CLIENT_AUTH
+              name: "{{ .Release.Name }}"
+        - name: KEYCLOAK_URL
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_URL
+              name: "{{ .Release.Name }}"
+        - name: KEYCLOAK_URL_REALM
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_URL_REALM
+              name: "{{ .Release.Name }}"
+        - name: KEYCLOAK_WEB_CLIENTID
+          valueFrom:
+            secretKeyRef:
+              key: WEB_CLIENTID
+              name: "{{ .Release.Name }}"
+        - name: MAIL_CONFIG
+          value: /app/mail-config.properties
+        - name: MULTI_TENANCY_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: MULTI_TENANCY_ENABLED
+              name: "{{ .Release.Name }}"
+        - name: REDIS_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: REDIS_ENABLED
+              name: "{{ .Release.Name }}"
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: REDIS_HOST
+              name: "{{ .Release.Name }}"
+        - name: REDIS_PASSCODE
+          valueFrom:
+            secretKeyRef:
+              key: REDIS_PASSCODE
+              name: "{{ .Release.Name }}"
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: REDIS_PORT
+              name: "{{ .Release.Name }}"
+        - name: WAIT_FOR
+          valueFrom:
+            configMapKeyRef:
+              key: BPM_WAIT_FOR
+              name: "{{ .Release.Name }}"
+        - name: WEB_CLIENTID
+          valueFrom:
+            secretKeyRef:
+              key: WEB_CLIENTID
+              name: "{{ .Release.Name }}"
+        - name: WEBSOCKET_ENCRYPT_KEY
+          valueFrom:
+            secretKeyRef:
+              key: WEBSOCKET_ENCRYPT_KEY
+              name: "{{ .Release.Name }}"
+        - name: WEBSOCKET_MESSAGE_TYPE
+          valueFrom:
+            configMapKeyRef:
+              key: WEBSOCKET_MESSAGE_TYPE
+              name: "{{ .Release.Name }}"
+        - name: WEBSOCKET_SECURITY_ORIGIN
+          valueFrom:
+            configMapKeyRef:
+              key: WEBSOCKET_SECURITY_ORIGIN
+              name: "{{ .Release.Name }}"
+
+        image: "{{ .Values.bpm.image.registry }}/{{ .Values.bpm.image.repository }}:{{ .Values.bpm.image.tag }}"
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /camunda/actuator/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 120
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 3
+        name: bpm
+        ports:
+        - containerPort: {{ int .Values.global.ingress.port }}
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /camunda/actuator/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 120
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 3
+        resources:
+          limits:
+            cpu: "{{ .Values.bpm.resources.limits.cpu }}"
+            memory: "{{ .Values.bpm.resources.limits.memory }}"
+          requests:
+            cpu: "{{ .Values.bpm.resources.requests.cpu }}"
+            memory: "{{ .Values.bpm.resources.requests.memory }}"
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /app/mail-config.properties
+          name: camunda-mail-config
+          subPath: mail-config.properties
+      {{- include "formsflow.imagePullSecrets" . | nindent 6 }}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: mail-config.properties
+            path: mail-config.properties
+          name: "{{ .Release.Name }}-bpm-mail-config"
+        name: camunda-mail-config

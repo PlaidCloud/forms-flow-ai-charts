@@ -1,0 +1,91 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: "{{ .Release.Name }}-data-analysis"
+  name: "{{ .Release.Name }}-data-analysis"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ .Release.Name }}-data-analysis"
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: "{{ .Release.Name }}-data-analysis"
+    spec:
+      containers:
+      - env:
+        # - name: DATABASE_URL
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       key: DATABASE_URL
+        #       name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_ALGORITHMS
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_ALGORITHMS
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_AUDIENCE
+          valueFrom:
+            secretKeyRef:
+              key: WEB_CLIENTID
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_CACHING_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_CACHING_ENABLED
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_ISSUER
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_ISSUER
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_JWKS_CACHE_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_JWKS_CACHE_TIMEOUT
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_JWKS_URI
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_JWKS_URI
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_WELL_KNOWN_CONFIG
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_CONFIG
+              name: "{{ .Release.Name }}"
+        - name: DATABASE_SUPPORT
+          valueFrom:
+            configMapKeyRef:
+              key: DATABASE_SUPPORT
+              name: "{{ .Release.Name }}"
+        - name: MODEL_ID
+          valueFrom:
+            configMapKeyRef:
+              key: MODEL_ID
+              name: "{{ .Release.Name }}"
+
+        image: "{{ .Values.dataAnalysis.image.registry }}/{{ .Values.dataAnalysis.image.repository }}:{{ .Values.dataAnalysis.image.tag }}"
+        name: data
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.global.ingress.port }}
+        resources:
+          limits:
+            cpu: "{{ .Values.dataAnalysis.resources.limits.cpu }}"
+            memory: "{{ .Values.dataAnalysis.resources.limits.memory }}"
+          requests:
+            cpu: "{{ .Values.dataAnalysis.resources.requests.cpu }}"
+            memory: "{{ .Values.dataAnalysis.resources.requests.memory }}"
+        stdin: true
+        tty: true
+      restartPolicy: Always
+      {{- include "formsflow.imagePullSecrets" . | nindent 6 }}

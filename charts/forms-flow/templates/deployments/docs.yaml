@@ -1,0 +1,117 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: "{{ .Release.Name }}-docs"
+  name: "{{ .Release.Name }}-docs"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ .Release.Name }}-docs"
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: "{{ .Release.Name }}-docs"
+    spec:
+      containers:
+      - env:
+        - name: JWT_OIDC_ALGORITHMS
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_ALGORITHMS
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_AUDIENCE
+          valueFrom:
+            secretKeyRef:
+              key: WEB_CLIENTID
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_CACHING_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_CACHING_ENABLED
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_ISSUER
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_ISSUER
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_JWKS_CACHE_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_JWKS_CACHE_TIMEOUT
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_JWKS_URI
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_JWKS_URI
+              name: "{{ .Release.Name }}"
+        - name: JWT_OIDC_WELL_KNOWN_CONFIG
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_JWT_OIDC_CONFIG
+              name: "{{ .Release.Name }}"
+        - name: FORMIO_URL
+          valueFrom:
+            configMapKeyRef:
+              key: FORMIO_URL
+              name: "{{ .Release.Name }}"
+        - name: FORMIO_ROOT_EMAIL
+          valueFrom:
+            secretKeyRef:
+              key: FORMIO_ROOT_EMAIL
+              name: "{{ .Release.Name }}"
+        - name: FORMIO_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: FORMIO_ROOT_PASSWORD
+              name: "{{ .Release.Name }}"
+        - name: CUSTOM_SUBMISSION_URL
+          valueFrom:
+            configMapKeyRef:
+              key: CUSTOM_SUBMISSION_URL
+              name: "{{ .Release.Name }}"
+        - name: CUSTOM_SUBMISSION_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: CUSTOM_SUBMISSION_ENABLED
+              name: "{{ .Release.Name }}"
+        - name: KEYCLOAK_ENABLE_CLIENT_AUTH
+          valueFrom:
+            configMapKeyRef:
+              key: KEYCLOAK_ENABLE_CLIENT_AUTH
+              name: "{{ .Release.Name }}"
+        - name: MULTI_TENANCY_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: MULTI_TENANCY_ENABLED
+              name: "{{ .Release.Name }}"
+        - name: FORMSFLOW_DOC_API_URL
+          valueFrom:
+            configMapKeyRef:
+              key: FORMSFLOW_DOC_API_URL
+              name: "{{ .Release.Name }}"
+        
+        image: "{{ .Values.docs.image.registry }}/{{ .Values.docs.image.repository }}:{{ .Values.docs.image.tag }}"
+        name: docs
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.global.ingress.port }}
+        resources:
+          limits:
+            cpu: "{{ .Values.docs.resources.limits.cpu }}"
+            memory: "{{ .Values.docs.resources.limits.memory }}"
+          requests:
+            cpu: "{{ .Values.docs.resources.requests.cpu }}"
+            memory: "{{ .Values.docs.resources.requests.memory }}"
+        stdin: true
+        tty: true
+      restartPolicy: Always
+      {{- include "formsflow.imagePullSecrets" . | nindent 6 }}
+
