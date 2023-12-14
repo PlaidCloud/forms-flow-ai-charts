@@ -34,7 +34,7 @@ spec:
         - name: ADMIN_WEB_CLIENTID
           valueFrom:
             secretKeyRef:
-              key: ADMIN_WEB_CLIENTID
+              key: WEB_CLIENTID
               name: "{{ .Release.Name }}"
         - name: APP_SECURITY_ORIGIN
           valueFrom:
@@ -189,12 +189,12 @@ spec:
         - name: KEYCLOAK_CLIENTID
           valueFrom:
             secretKeyRef:
-              key: KEYCLOAK_CLIENTID
+              key: BPM_KEYCLOAK_CLIENTID
               name: "{{ .Release.Name }}"
         - name: KEYCLOAK_CLIENTSECRET
           valueFrom:
             secretKeyRef:
-              key: KEYCLOAK_CLIENTSECRET
+              key: BPM_KEYCLOAK_CLIENTSECRET
               name: "{{ .Release.Name }}"
         - name: KEYCLOAK_ENABLE_CLIENT_AUTH
           valueFrom:

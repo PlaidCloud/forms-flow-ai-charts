@@ -27,9 +27,9 @@ data:
   DATABASE_PORT: {{ .Values.postgresql.enabled | ternary .Values.postgresql.port .Values.global.postgresql.port }}
   DATABASE_SERVICE_NAME: {{ .Values.postgresql.enabled | ternary .Values.postgresql.hostname .Values.global.postgresql.hostname }}
   DATABASE_URL: {{ include "formsflow.postgresUrl" . }}
-  DRAFT_ENABLED: "{{ .Values.global.features.draft }}"
   DRAFT_POLLING_RATE: "15000"
-  EXPORT_PDF_ENABLED: "{{ .Values.global.features.exportPDF }}"
+  FEATURE_DRAFT_ENABLED: "{{ .Values.global.features.draft }}"
+  FEATURE_EXPORT_PDF_ENABLED: "{{ .Values.global.features.exportPDF }}"
   FORMIO_DEBUG: "formio:*"
   FORMIO_DOMAIN: https://forms.{{ .Values.global.ingress.hostname }}
   FORMIO_URL: https://forms.{{ .Values.global.ingress.hostname }}
@@ -57,20 +57,19 @@ data:
   REDIS_HOST: "{{ .Values.redis.enabled | ternary .Values.redis.host .Values.global.redis.host }}"
   REDIS_PORT: "{{ .Values.redis.enabled | ternary .Values.redis.port .Values.global.redis.port }}"
   WEB_API_URL: https://api.{{ .Values.global.ingress.hostname }}
-  WEB_APPLICATION_NAME: "{{ tpl .Values.webname . }}"
+  WEB_APPLICATION_NAME: "{{ tpl .Values.web.name . }}"
   WEB_CUSTOM_THEME_URL: "{{ tpl .Values.web.custom_theme_url . }}"
   WEB_ENABLE_APPLICATIONS_MODULE: "true"
   WEB_ENABLE_DASHBOARDS_MODULE: "true"
   WEB_ENABLE_FORMS_MODULE: "true"
   WEB_ENABLE_PROCESSES_MODULE: "true"
   WEB_ENABLE_TASKS_MODULE: "true"
-  WEB_KEYCLOAK_CLIENT: "{{ tpl .Values.webclient . }}"
   WEB_OPENTELEMETRY_SERVICE: "false"
   WEB_PUBLIC_WORKFLOW_ENABLED: "false"
   WEB_USER_ACCESS_PERMISSIONS: ''
   WEB_WEB_BASE_CUSTOM_URL: "{{ tpl .Values.web.base_custom_url . }}"
   WEBSOCKET_MESSAGE_TYPE: "{{ .Values.bpm.camunda.websocket.messageType }}"
-  WEBSOCKET_SECURITY_ORIGIN: {{ ternary  (.Values.bpm.camunda.websocket.securityOrigin | quote) (randAlphaNum 6 | quote) (kindIs "string" .Values.bpm.camunda.websocket.securityOrigin) }}
+  WEBSOCKET_SECURITY_ORIGIN: {{ kindIs "string" .Values.bpm.camunda.websocket.securityOrigin | ternary  (.Values.bpm.camunda.websocket.securityOrigin | quote) (randAlphaNum 6 | quote) }}
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}
@@ -81,9 +80,9 @@ data:
     # send mails via SMTP
     mail.transport.protocol=smtp
     mail.smtp.auth=true
-    mail.smtp.host={{.Values.mail.smtp.server}}
-    mail.smtp.port={{.Values.mail.smtp.port}}
-    mail.smtp.ssl.enable={{.Values.mail.smtp.ssl.enable}}
+    mail.smtp.host={{ .Values.mail.smtp.server }}
+    mail.smtp.port={{ .Values.mail.smtp.port }}
+    mail.smtp.ssl.enable={{ .Values.mail.smtp.ssl.enable }}
     mail.smtp.socketFactory.port=465
     mail.smtp.socketFactory.class=javax.net.ssl.SSLSocketFactory
     # poll mails via IMAPS
@@ -93,13 +92,13 @@ data:
     mail.imaps.timeout=1000
     # additional config
     #mail.poll.folder=INBOX
-    mail.sender={{.Values.mail.from}}
+    mail.sender={{ .Values.mail.from }}
     mail.sender.alias=DoNotReply
     mail.attachment.download=true
     mail.attachment.path=attachments
     # credentials
-    mail.user={{.Values.mail.user}}
-    mail.password={{.Values.mail.password}}
+    mail.user={{ .Values.mail.user }}
+    mail.password={{ .Values.mail.password }}
 kind: ConfigMap
 metadata:
   labels:

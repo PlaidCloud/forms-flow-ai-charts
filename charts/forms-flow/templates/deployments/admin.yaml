@@ -47,7 +47,7 @@ spec:
         - name: JWT_OIDC_AUDIENCE
           valueFrom:
             secretKeyRef:
-              key: ADMIN_WEB_CLIENTID
+              key: WEB_CLIENTID
               name: "{{ .Release.Name }}"
         - name: JWT_OIDC_CACHING_ENABLED
           valueFrom:
@@ -107,12 +107,12 @@ spec:
         - name: KEYCLOAK_ADMIN_CLIENT
           valueFrom:
             secretKeyRef:
-              key: KEYCLOAK_CLIENTID
+              key: BPM_KEYCLOAK_CLIENTID
               name: "{{ .Release.Name }}"
         - name: KEYCLOAK_ADMIN_SECRET
           valueFrom:
             secretKeyRef:
-              key: KEYCLOAK_CLIENTSECRET
+              key: BPM_KEYCLOAK_CLIENTSECRET
               name: "{{ .Release.Name }}"
         - name: FORMIO_ROOT_EMAIL
           valueFrom:

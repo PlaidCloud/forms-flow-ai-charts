@@ -35,8 +35,8 @@ spec:
         - name: JWT_OIDC_AUDIENCE
           valueFrom:
             secretKeyRef:
-              key: ADMIN_WEB_CLIENTID
-              name: "{{ .Values.formsflow.secret }}"
+              key: WEB_CLIENTID
+              name: "{{ .Release.Name }}"
         - name: JWT_OIDC_CACHING_ENABLED
           valueFrom:
             configMapKeyRef:

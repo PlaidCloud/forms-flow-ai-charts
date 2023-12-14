@@ -35,12 +35,12 @@ spec:
         - name: BPM_CLIENT_ID
           valueFrom:
             secretKeyRef:
-              key: KEYCLOAK_CLIENTID
+              key: BPM_KEYCLOAK_CLIENTID
               name: "{{ .Release.Name }}"
         - name: BPM_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
-              key: KEYCLOAK_CLIENTSECRET
+              key: BPM_KEYCLOAK_CLIENTSECRET
               name: "{{ .Release.Name }}"
         - name: BPM_TOKEN_API
           valueFrom:

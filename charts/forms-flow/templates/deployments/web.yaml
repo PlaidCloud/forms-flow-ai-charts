@@ -44,8 +44,8 @@ spec:
               name: "{{ .Release.Name }}"
         - name: REACT_APP_KEYCLOAK_CLIENT
           valueFrom:
-            configMapKeyRef:
-              key: WEB_KEYCLOAK_CLIENT
+            secretKeyRef:
+              key: WEB_CLIENTID
               name: "{{ .Release.Name }}"
         - name: REACT_APP_WEB_BASE_URL
           valueFrom:
@@ -115,7 +115,7 @@ spec:
         - name: REACT_APP_DRAFT_ENABLED
           valueFrom:
             configMapKeyRef:
-              key: DRAFT_ENABLED
+              key: FEATURE_DRAFT_ENABLED
               name: "{{ .Release.Name }}"
         - name: REACT_APP_DRAFT_POLLING_RATE
           valueFrom:
@@ -125,7 +125,7 @@ spec:
         - name: REACT_APP_EXPORT_PDF_ENABLED
           valueFrom:
             configMapKeyRef:
-              key: EXPORT_PDF_ENABLED
+              key: FEATURE_EXPORT_PDF_ENABLED
               name: "{{ .Release.Name }}"
         - name: REACT_APP_PUBLIC_WORKFLOW_ENABLED
           valueFrom:
